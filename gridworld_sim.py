@@ -12,7 +12,7 @@ if __name__ == "__main__":
     print(obs)
     env.render()
     j = 0
-    sleep(1)
+    sleep(0.1)
 
     while True:
         move = np.random.randint(0, 4)
@@ -20,6 +20,6 @@ if __name__ == "__main__":
         obs, reward, done, info = env.step(move)
         env.render()
         print(j, s0, GridWorld.actionToString(move), obs, reward)
-        sleep(1)
+        sleep(0.1)
 
         j += 1
