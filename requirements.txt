@@ -1,0 +1,9 @@
+certifi==2017.7.27.1
+chardet==3.0.4
+-e git+git@github.com:PeterMitrano/gym.git@e21766f309303da24bbcc53a4b87ed5c435d4bd0#egg=gym
+idna==2.6
+numpy==1.13.1
+pyglet==1.2.4
+requests==2.18.4
+six==1.10.0
+urllib3==1.22
