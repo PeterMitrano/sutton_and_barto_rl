@@ -81,7 +81,7 @@
 
 # ### Code
 
-# In[ ]:
+# In[1]:
 
 # dependencies
 import numpy as np
@@ -90,7 +90,7 @@ import matplotlib.pyplot as plt
 np.set_printoptions(precision=1)
 
 
-# In[1]:
+# In[2]:
 
 def R(state, action, next_state):
     r = state[0]
@@ -166,7 +166,7 @@ def Pi(state, action):
 # 
 # Now that we have our P, R, and Pi, lets iteratively solve the system of linear equations that is the Value of policy $\pi$
 
-# In[4]:
+# In[3]:
 
 def evaluate_policy(gamma=0.9, debug=True, R_=R):
     V = np.zeros((5, 5))
@@ -196,7 +196,7 @@ def evaluate_policy(gamma=0.9, debug=True, R_=R):
             converged = True
 
         iters += 1    
-    #     print(newV)
+        print(newV)
         V = newV
     
     return iters, V

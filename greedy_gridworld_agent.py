@@ -11,11 +11,13 @@ we don't get the optimal policy. See `iterative_greedy_gridworld_agent.py` for t
 from time import sleep
 
 import gym
+import numpy as np
 from gym.envs.classic_control import GridWorld
 
 from grid_world_model import evaluate_policy, A, Env
 
 if __name__ == "__main__":
+    np.set_printoptions(precision=4)
     env = gym.make("GridWorld-v0")
 
     obs = env.reset()

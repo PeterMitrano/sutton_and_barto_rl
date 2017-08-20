@@ -9,23 +9,7 @@ import gym
 import numpy as np
 from gym.envs.classic_control import GridWorld
 
-from grid_world_model import evaluate_policy, S, A, Env, R
-
-
-def pi_to_string(pi):
-    for r in range(pi.shape[0]):
-        rs = ""
-        for c in range(pi.shape[1]):
-            if pi[r][c][0]:
-                rs += 'N '
-            elif pi[r][c][1]:
-                rs += 'S '
-            elif pi[r][c][2]:
-                rs += 'E '
-            elif pi[r][c][3]:
-                rs += 'W '
-        print(rs)
-
+from grid_world_model import evaluate_policy, S, A, Env, R, iterate_value
 
 if __name__ == "__main__":
     env = gym.make("GridWorld-v0")
@@ -35,6 +19,7 @@ if __name__ == "__main__":
     j = 0
     sleep(0.1)
     pi = np.ones((5, 5, 4)) * 0.25
+
 
     def Pi(state, action):
         if action == 'N':
@@ -48,13 +33,16 @@ if __name__ == "__main__":
 
 
     done = False
+    V = np.zeros((5, 5))
+
     while not done:
-        # Policy Evaluation
-        V = evaluate_policy(gamma=0.9, pi=Pi)
+        # Policy Evaluation, but only one step
+        V = iterate_value(V, gamma=0.9, pi=Pi)
+        print(V)
 
         def best_move(s):
             best_V = -1e12
-            best_a = env.action_space.sample()
+            best_a = np.random.randint(0, 4)
             for a in A(s):
                 s1 = Env(s, a)
                 r = R(s, a, s1)
@@ -73,13 +61,13 @@ if __name__ == "__main__":
             pi[s_] = np.array([0, 0, 0, 0])
             pi[s_][m] = 1
 
-        if np.all(old_pi == pi):
-            print("solved at iter {}".format(j))
-            print("Final V:")
-            print(V)
-            print("Final Pi:")
-            print(pi_to_string(pi))
-            done = True
+        # if np.all(old_pi == pi):
+            # print("solved!")
+            # print("Final V:")
+            # print(V)
+            # print("Final Pi:")
+            # print(pi)
+            # done = True
 
         obs, reward, _, info = env.step(best_move(obs))
         env.render()
