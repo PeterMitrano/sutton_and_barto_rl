@@ -95,7 +95,7 @@ def evaluate_policy(gamma=0.9, pi=Pi, r_=R, p_=P):
         iters += 1
         V = newV
 
-    return V
+    return V, iters
 
 
 def iterate_value(V, gamma=0.9, pi=Pi, r_=R, p_=P):
@@ -113,3 +113,18 @@ def iterate_value(V, gamma=0.9, pi=Pi, r_=R, p_=P):
         newV[s] = sum_over_actions
 
     return newV
+
+
+def print_policy(pi):
+    for r in range(pi.shape[0]):
+        rs = ""
+        for c in range(pi.shape[1]):
+            if pi[r][c][0]:
+                rs += 'N '
+            elif pi[r][c][1]:
+                rs += 'S '
+            elif pi[r][c][2]:
+                rs += 'E '
+            elif pi[r][c][3]:
+                rs += 'W '
+        print(rs)

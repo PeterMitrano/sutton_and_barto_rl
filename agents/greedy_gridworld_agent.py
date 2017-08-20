@@ -14,7 +14,7 @@ import gym
 import numpy as np
 from gym.envs.classic_control import GridWorld
 
-from grid_world_model import evaluate_policy, A, Env
+from agents.grid_world_model import evaluate_policy, A, Env
 
 if __name__ == "__main__":
     np.set_printoptions(precision=4)
@@ -25,7 +25,7 @@ if __name__ == "__main__":
     j = 0
     sleep(0.1)
 
-    V = evaluate_policy()
+    V, _ = evaluate_policy()
     print(V)
 
     while True:

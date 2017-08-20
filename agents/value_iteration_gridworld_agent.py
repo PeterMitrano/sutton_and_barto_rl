@@ -2,6 +2,7 @@
 This code shows a greedy actor in gridworld.
 At each iteration, it solves for the state-value function of the current greedy policy
 """
+import argparse
 from copy import deepcopy
 from time import sleep
 
@@ -9,17 +10,20 @@ import gym
 import numpy as np
 from gym.envs.classic_control import GridWorld
 
-from grid_world_model import evaluate_policy, S, A, Env, R, iterate_value
+from agents.grid_world_model import S, A, Env, R, iterate_value, print_policy
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-r', '--render', action='store_true', help='if set, show the environment gui')
+    args = parser.parse_args()
     env = gym.make("GridWorld-v0")
 
     obs = env.reset()
-    env.render()
+    if args.render:
+        env.render()
+        sleep(0.1)
     j = 0
-    sleep(0.1)
     pi = np.ones((5, 5, 4)) * 0.25
-
 
     def Pi(state, action):
         if action == 'N':
@@ -31,18 +35,16 @@ if __name__ == "__main__":
         elif action == 'W':
             return pi[state][3]
 
-
     done = False
     V = np.zeros((5, 5))
 
     while not done:
         # Policy Evaluation, but only one step
-        V = iterate_value(V, gamma=0.9, pi=Pi)
-        print(V)
+        newV = iterate_value(V, gamma=0.9, pi=Pi)
 
         def best_move(s):
             best_V = -1e12
-            best_a = np.random.randint(0, 4)
+            best_a = env.action_space.sample()
             for a in A(s):
                 s1 = Env(s, a)
                 r = R(s, a, s1)
@@ -53,7 +55,6 @@ if __name__ == "__main__":
             move = GridWorld.string_to_action(best_a)
             return move
 
-
         # Policy Improvement
         old_pi = deepcopy(pi)
         for s_ in S():
@@ -61,15 +62,17 @@ if __name__ == "__main__":
             pi[s_] = np.array([0, 0, 0, 0])
             pi[s_][m] = 1
 
-        # if np.all(old_pi == pi):
-            # print("solved!")
-            # print("Final V:")
-            # print(V)
-            # print("Final Pi:")
-            # print(pi)
-            # done = True
+        if np.all(old_pi == pi) and np.all(abs(newV - V) < 1e-5):
+            print("solved at iter {}".format(j))
+            print("Final V:")
+            print(V)
+            print("Final Pi:")
+            print(print_policy(pi))
+            done = True
 
         obs, reward, _, info = env.step(best_move(obs))
-        env.render()
-        sleep(0.1)
+        if args.render:
+            env.render()
+            sleep(0.1)
         j += 1
+        V = newV

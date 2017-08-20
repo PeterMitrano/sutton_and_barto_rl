@@ -3,7 +3,6 @@ from time import sleep
 import gym
 import numpy as np
 from gym.envs.classic_control import GridWorld
-from gym.envs.classic_control.gridworld import XY
 
 if __name__ == "__main__":
     env = gym.make("GridWorld-v0")
@@ -16,10 +15,9 @@ if __name__ == "__main__":
 
     while True:
         move = np.random.randint(0, 4)
-        s0 = XY(obs.x, obs.y)
         obs, reward, done, info = env.step(move)
         env.render()
-        print(j, s0, GridWorld.actionToString(move), obs, reward)
+        print(j, obs, GridWorld.action_to_string(move), obs, reward)
         sleep(0.1)
 
         j += 1
