@@ -11,7 +11,6 @@ we don't get the optimal policy. See `iterative_greedy_gridworld_agent.py` for t
 from time import sleep
 
 import gym
-import numpy as np
 from gym.envs.classic_control import GridWorld
 
 from grid_world_model import evaluate_policy, A, Env
@@ -20,8 +19,6 @@ if __name__ == "__main__":
     env = gym.make("GridWorld-v0")
 
     obs = env.reset()
-    env.state.x = 4
-    env.state.y = 4
     env.render()
     j = 0
     sleep(0.1)
@@ -30,11 +27,10 @@ if __name__ == "__main__":
     print(V)
 
     while True:
-        s = (obs.y, obs.x)
         best_V = -1e12
-        best_a = np.random.randint(0, 4)
-        for a in A(s):
-            s1 = Env(s, a)
+        best_a = env.action_space.sample()
+        for a in A(obs):
+            s1 = Env(obs, a)
             if V[s1] > best_V:
                 best_V = V[s1]
                 best_a = a

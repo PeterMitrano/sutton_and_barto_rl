@@ -14,16 +14,16 @@ def Pi(state, action):
 
 
 def R(state, action, next_state):
-    r = state[0]
-    c = state[1]
-    if c == 1 and r == 0:
+    y = state[1]
+    x = state[0]
+    if x == 1 and y == 0:
         return 10
-    elif c == 3 and r == 0:
+    elif x == 3 and y == 0:
         return 5
-    elif (action == 'N' and r == 0) or \
-            (action == 'S' and r == 4) or \
-            (action == 'E' and c == 4) or \
-            (action == 'W' and c == 0):
+    elif (action == 'N' and y == 0) or \
+            (action == 'S' and y == 4) or \
+            (action == 'E' and x == 4) or \
+            (action == 'W' and x == 0):
         return -1
     else:
         return 0
@@ -34,25 +34,25 @@ def A(state):
 
 
 def Env(state, action):
-    r = state[0]
-    c = state[1]
-    if c == 1 and r == 0:
-        s = (4, 1)
-    elif c == 3 and r == 0:
-        s = (2, 3)
-    elif (action == 'N' and r == 0) or \
-            (action == 'S' and r == 4) or \
-            (action == 'E' and c == 4) or \
-            (action == 'W' and c == 0):
-        s = (r, c)
+    y = state[1]
+    x = state[0]
+    if x == 1 and y == 0:
+        s = (1, 4)
+    elif x == 3 and y == 0:
+        s = (3, 2)
+    elif (action == 'N' and y == 0) or \
+            (action == 'S' and y == 4) or \
+            (action == 'E' and x == 4) or \
+            (action == 'W' and x == 0):
+        s = (x, y)
     elif action == 'N':
-        s = (r - 1, c)
+        s = (x, y - 1)
     elif action == 'S':
-        s = (r + 1, c)
+        s = (x, y + 1)
     elif action == 'E':
-        s = (r, c + 1)
+        s = (x + 1, y)
     elif action == 'W':
-        s = (r, c - 1)
+        s = (x - 1, y)
 
     return s
 
@@ -66,19 +66,19 @@ def P(state, action, next_state):
 
 
 def next_states(state):
-    r = state[0]
-    c = state[1]
-    if c == 1 and r == 0:
-        return [(4, 1)]
-    elif c == 3 and r == 0:
-        return [(2, 3)]
-    return {(r - 1 if r > 0 else r, c),
-            (r + 1 if r < 4 else r, c),
-            (r, c - 1 if c > 0 else c),
-            (r, c + 1 if c < 4 else c)}
+    y = state[1]
+    x = state[0]
+    if x == 1 and y == 0:
+        return [(1, 4)]
+    elif x == 3 and y == 0:
+        return [(3, 2)]
+    return {(x, y - 1 if y > 0 else y),
+            (x, y + 1 if y < 4 else y),
+            (x - 1 if x > 0 else x, y),
+            (x + 1 if x < 4 else x, y)}
 
 
-def evaluate_policy(gamma=0.9, pi=Pi):
+def evaluate_policy(gamma=0.9, pi=Pi, r_=R, p_=R):
     V = np.zeros((5, 5))
     iters = 0
     converged = False
@@ -91,8 +91,8 @@ def evaluate_policy(gamma=0.9, pi=Pi):
             for a in A(s):  # this corresponds to the summation over actions
                 sum_over_next_states = 0
                 for next_state in next_states(s):  # this corresponds to the summation over next states
-                    p = P(s, a, next_state)
-                    r = R(s, a, next_state)
+                    p = p_(s, a, next_state)
+                    r = r_(s, a, next_state)
                     x = gamma * V[next_state]
                     sum_over_next_states += p * (r + x)
                 sum_over_actions += pi(s, a) * sum_over_next_states

@@ -9,7 +9,7 @@ import gym
 import numpy as np
 from gym.envs.classic_control import GridWorld
 
-from grid_world_model import evaluate_policy, A, Env, S, R
+from grid_world_model import evaluate_policy, S, A, Env, R
 
 if __name__ == "__main__":
     env = gym.make("GridWorld-v0")
@@ -35,8 +35,6 @@ if __name__ == "__main__":
         # Policy Evaluation
         V = evaluate_policy(gamma=0.9, pi=Pi)
 
-        s = (obs.y, obs.x)
-
         def best_move(s):
             best_V = -1e12
             best_a = np.random.randint(0, 4)
@@ -51,16 +49,21 @@ if __name__ == "__main__":
             return move
 
         # Policy Improvement
+        old_pi = deepcopy(pi)
         for s_ in S():
-            b = deepcopy(pi[s_])
             m = best_move(s_)
             pi[s_] = np.array([0, 0, 0, 0])
             pi[s_][m] = 1
 
-            if np.all(b == pi[s_]):
-                done = True
+        if np.all(old_pi == pi):
+            print("solved!")
+            print("Final V:")
+            print(V)
+            print("Final Pi:")
+            print(pi)
+            done = True
 
-        obs, reward, done, info = env.step(best_move(s))
+        obs, reward, _, info = env.step(best_move(obs))
         env.render()
         sleep(0.1)
         j += 1
