@@ -81,7 +81,7 @@
 
 # ### Code
 
-# In[1]:
+# In[ ]:
 
 # dependencies
 import numpy as np
@@ -90,7 +90,7 @@ import matplotlib.pyplot as plt
 np.set_printoptions(precision=1)
 
 
-# In[2]:
+# In[1]:
 
 def R(state, action, next_state):
     r = state[0]
@@ -105,7 +105,7 @@ def R(state, action, next_state):
         return 0
 
 
-def P(state, action, next_state):
+def Env(state, action):
     r = state[0]
     c = state[1]
     if c == 1 and r == 0:
@@ -122,7 +122,11 @@ def P(state, action, next_state):
         s = (r, c + 1)
     elif action == 'W':
         s = (r, c - 1)
+        
+    return s
 
+def P(state, action, next_state):
+    s = Env(state, action)
     if next_state[0] == s[0] and next_state[1] == s[1]:
         return 1
     else:
