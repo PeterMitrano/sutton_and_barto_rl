@@ -9,15 +9,15 @@
 
 # This environment is episodic, and stochastic. The state is the amount of money the gambler has, and the available actions are to bet a certain amount of money. With some fixed percentage, the gambler will win and receive the amount of money bet, and otherwise loses the amount of money bet. The gambler's capital is between 1 and 99 dollars. The episode wins when the gambler has 0 or 100 dollars. Reward is zero on all transitions except those in which the gambler reaches \$100. Since this is episodic, we use no discount $\gamma$, so you won't see it in the code.
 
-# In[43]:
+# In[75]:
 
 import numpy as np
 import matplotlib.pyplot as plt
 from IPython.core.debugger import Tracer
-np.set_printoptions(precision=4, suppress=True)
+np.set_printoptions(precision=17, suppress=True)
 
 
-# In[44]:
+# In[76]:
 
 # Set up the reward and transition functions
 def step(capital, bet, p):
@@ -36,7 +36,7 @@ def step(capital, bet, p):
     return capital, reward, done
 
 
-# In[65]:
+# In[115]:
 
 converged = False
 p = 0.4
@@ -68,13 +68,12 @@ while not converged:
     Vs.append(V.copy())
     iters += 1
     
-    if delta == 0:
+    if delta < 1e-10:
         converged = True
         
 # Show graphs of value estimates
 plt.xlabel("Capital")
 plt.ylabel("Value Estimates")
-plt.subplot(111)
 axes = plt.gca()
 axes.set_xlim([1, 99])
 axes.set_ylim([0, 1])
@@ -90,7 +89,7 @@ plt.show()
 
 # ### Now the Final Policy
 
-# In[64]:
+# In[116]:
 
 pi = np.ndarray(99)
 
@@ -105,15 +104,37 @@ for s in range(1, 99):
         lose_reward = 0 # works cuz episode ends when this happens so reward is limited
         win_reward = 1 if win_capital == 100 else 0
         q = p * (win_reward + V[win_capital]) + (1 - p) * (lose_reward + V[lose_capital])
+#         if s == 16 and (a == 9 or a == 16):
+#             print(a, q, win_capital, lose_capital, V[win_capital], V[lose_capital])
         Qs[a] = q
+
     best_a = np.argmax(Qs)
     pi[s] = best_a
     
+print(pi)
 plt.plot(pi)
+axes = plt.gca()
+axes.set_xlim([0, 100])
+axes.set_ylim([1, 50])
 plt.xlabel("Capital")
 plt.ylabel("Final policy (stake)")
 plt.show()
 
+
+# ### Answering the exercise questions
+# 
+# Notice how the graph doesn't exactly match the graph in the book? Well if you look carefully, it seems to be a numerical stability issue. Specifically, there are often two actions that miximize expected reward for each state. One is the maximum possible bet. I don't know why, so lets try to find out... recall $\gamma\$ here is 1.0 so we ignore it.
+# 
+# 
+# 
+# $$R'(x) = \begin{cases} 
+#       1 & x = 100 \\
+#       0 & x \neq 100 \\
+#    \end{cases}
+# $$
+# 
+# $$ \max_a \sum_{s'} P^a_{ss'} * [R^a_{ss'} + V(s)]$$
+# $$ \max_a (p * [R'(s + a) + V(s + a)] + (1 - p) * [0 + V(s - a)])$$
 
 # In[ ]:
 
