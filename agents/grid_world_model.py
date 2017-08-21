@@ -98,6 +98,35 @@ def evaluate_policy(gamma=0.9, pi=Pi, r_=R, p_=P):
     return V, iters
 
 
+def value_iteration(gamma=0.9, pi=Pi, r_=R, p_=P):
+    V = np.zeros((5, 5))
+    iters = 0
+    converged = False
+    while not converged:
+        newV = np.zeros((5, 5))
+        for s in S():
+            maxQ = -1e12
+            for a in A(s):  # this corresponds to the summation over actions
+                q = 0
+                for next_state in next_states(s):  # this corresponds to the summation over next states
+                    p = p_(s, a, next_state)
+                    r = r_(s, a, next_state)
+                    x = gamma * V[next_state]
+                    q += p * (r + x)
+                if q > maxQ:
+                    newV[s] = q
+                    maxQ = q
+
+        delta = np.amax(abs(newV - V))
+        if delta < 1e-5:
+            converged = True
+
+        iters += 1
+        V = newV
+
+    return V, iters
+
+
 def iterate_value(V, gamma=0.9, pi=Pi, r_=R, p_=P):
     newV = np.zeros((5, 5))
     for s in S():

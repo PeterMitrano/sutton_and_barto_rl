@@ -3,14 +3,12 @@ This code shows a greedy actor in gridworld.
 At each iteration, it solves for the state-value function of the current greedy policy
 """
 import argparse
-from copy import deepcopy
 from time import sleep
 
 import gym
 import numpy as np
-from gym.envs.classic_control import GridWorld
 
-from agents.grid_world_model import S, A, Env, R, iterate_value, print_policy
+from agents.grid_world_model import value_iteration, print_policy, A, Env, R
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -18,61 +16,37 @@ if __name__ == "__main__":
     args = parser.parse_args()
     env = gym.make("GridWorld-v0")
 
+    done = False
+    V, iters = value_iteration()
+    print("Value iteration completed in {} iterations".format(iters))
+    print(V)
+    np.set_printoptions(precision=1, suppress=True)
+    pi = np.zeros((5, 5, 4))
+
+    for r in range(pi.shape[0]):
+        for c in range(pi.shape[1]):
+            s = (r, c)
+            maxQ = -1e12
+            maxA = None
+            for a in A(s):
+                s1 = Env(s, a)
+                reward = R(s, a, s1)
+                q = reward + 0.9 * V[s1]
+                if q > maxQ:
+                    maxA = a
+                    maxQ = q
+            pi[r, c, env.string_to_action(maxA)] = 1
+
+    print_policy(pi)
+
     obs = env.reset()
     if args.render:
         env.render()
         sleep(0.1)
-    j = 0
-    pi = np.ones((5, 5, 4)) * 0.25
 
-    def Pi(state, action):
-        if action == 'N':
-            return pi[state][0]
-        elif action == 'S':
-            return pi[state][1]
-        elif action == 'E':
-            return pi[state][2]
-        elif action == 'W':
-            return pi[state][3]
-
-    done = False
-    V = np.zeros((5, 5))
-
-    while not done:
-        # Policy Evaluation, but only one step
-        newV = iterate_value(V, gamma=0.9, pi=Pi)
-
-        def best_move(s):
-            best_V = -1e12
-            best_a = env.action_space.sample()
-            for a in A(s):
-                s1 = Env(s, a)
-                r = R(s, a, s1)
-                if r + V[s1] > best_V:
-                    best_V = r + V[s1]
-                    best_a = a
-
-            move = GridWorld.string_to_action(best_a)
-            return move
-
-        # Policy Improvement
-        old_pi = deepcopy(pi)
-        for s_ in S():
-            m = best_move(s_)
-            pi[s_] = np.array([0, 0, 0, 0])
-            pi[s_][m] = 1
-
-        if np.all(old_pi == pi) and np.all(abs(newV - V) < 1e-5):
-            print("solved at iter {}".format(j))
-            print("Final V:")
-            print(V)
-            print("Final Pi:")
-            print(print_policy(pi))
-            done = True
-
-        obs, reward, _, info = env.step(best_move(obs))
+    for j in range(10):
+        a = np.argmax(pi[(obs[0], obs[1])])
+        obs, reward, _, info = env.step(a)
         if args.render:
             env.render()
             sleep(0.1)
-        j += 1
-        V = newV
