@@ -10,7 +10,7 @@ import gym
 import numpy as np
 from gym.envs.classic_control import GridWorld
 
-from agents.grid_world_model import evaluate_policy, S, A, Env, R, print_policy
+from agents.gridworld_model import evaluate_policy, S, A, Env, R, print_policy
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

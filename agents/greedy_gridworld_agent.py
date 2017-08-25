@@ -14,7 +14,7 @@ import gym
 import numpy as np
 from gym.envs.classic_control import GridWorld
 
-from agents.grid_world_model import evaluate_policy, A, Env
+from agents.gridworld_model import evaluate_policy, A, Env
 
 if __name__ == "__main__":
     np.set_printoptions(precision=4)

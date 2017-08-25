@@ -8,7 +8,7 @@ from time import sleep
 import gym
 import numpy as np
 
-from agents.grid_world_model import value_iteration, print_policy, A, Env, R
+from agents.gridworld_model import value_iteration, print_policy, A, Env, R
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
