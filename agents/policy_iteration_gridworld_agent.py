@@ -25,6 +25,7 @@ if __name__ == "__main__":
     j = 0
     pi = np.ones((5, 5, 4)) * 0.25
 
+
     def Pi(state, action):
         if action == 'N':
             return pi[state][0]
@@ -40,6 +41,7 @@ if __name__ == "__main__":
     while not done:
         # Policy Evaluation
         V, iters = evaluate_policy(gamma=0.9, pi=Pi)
+
 
         def best_move(s):
             best_V = -1e12
