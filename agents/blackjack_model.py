@@ -16,36 +16,57 @@ def sample_card_value():
     card = np.random.randint(1, 14)
     if card > 10:  # J, K, Q
         return 10
+    else:
+        return card
 
 
 def play_hand(pi):
     dealer_showing = sample_card_value()
+    dealer_hidden = sample_card_value()
     player_showing = sample_card_value()
     player_hidden = sample_card_value()
+    print("{},{} {},{}".format(dealer_hidden, dealer_showing, player_hidden, player_showing))
+    return play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
+
+
+def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden):
     player = player_hidden + player_showing
-    usable_ace = (player_hidden == 1 and player < 21)
+    usable_ace = 1 if (player_hidden == 1 and player < 21) else 0
     s = BlackJackState(dealer_showing, player_showing, player_hidden, usable_ace)
 
     # implement user policy
-    action = pi(s)
-    if action == HIT:
-        player += sample_card_value()
-        if player > 21:
-            return LOSE
-    elif action == STICK:
-        # now it's the dealer's turn
-        pass
-    else:
-        raise ValueError("must HIT or STICK")
+    while True:
+        action = pi(s)
+        if action == HIT:
+            v = sample_card_value()
+            print("HIT", v)
+            player += v
+            if player > 21:
+                print("player bust")
+                return s, LOSE
+        elif action == STICK:
+            # now it's the dealer's turn
+            break
+        else:
+            raise ValueError("must HIT or STICK")
 
     # implement dealer policy
-    dealer_hidden = sample_card_value()
     dealer = dealer_hidden + s.dealer_showing
-    if dealer > 21:
-        return s, WIN
-    elif dealer == player:
-        return s, DRAW
-    elif dealer > player:
-        return s, LOSE
-    elif player > dealer:
-        return s, WIN
+
+    while True:
+        if dealer > 21:
+            print("dealer BUST")
+            return s, WIN
+        elif dealer < 17:
+            v = sample_card_value()
+            print("DEALER HIT", v)
+            dealer += v
+        elif dealer == player:
+            print("draw")
+            return s, DRAW
+        elif dealer > player:
+            print("dealer won")
+            return s, LOSE
+        elif player > dealer:
+            print("player won")
+            return s, WIN
