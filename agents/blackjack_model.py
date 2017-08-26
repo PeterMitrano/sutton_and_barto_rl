@@ -25,7 +25,7 @@ def play_hand(pi):
     dealer_hidden = sample_card_value()
     player_showing = sample_card_value()
     player_hidden = sample_card_value()
-    print("{},{} {},{}".format(dealer_hidden, dealer_showing, player_hidden, player_showing))
+    # print("{},{} {},{}".format(dealer_hidden, dealer_showing, player_hidden, player_showing))
     return play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
 
 
@@ -39,10 +39,10 @@ def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
         action = pi(s)
         if action == HIT:
             v = sample_card_value()
-            print("HIT", v)
+            # print("HIT", v)
             player += v
             if player > 21:
-                print("player bust")
+                # print("player bust")
                 return s, LOSE
         elif action == STICK:
             # now it's the dealer's turn
@@ -55,18 +55,18 @@ def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
 
     while True:
         if dealer > 21:
-            print("dealer BUST")
+            # print("dealer BUST")
             return s, WIN
         elif dealer < 17:
             v = sample_card_value()
-            print("DEALER HIT", v)
+            # print("DEALER HIT", v)
             dealer += v
         elif dealer == player:
-            print("draw")
+            # print("draw")
             return s, DRAW
         elif dealer > player:
-            print("dealer won")
+            # print("dealer won")
             return s, LOSE
         elif player > dealer:
-            print("player won")
+            # print("player won")
             return s, WIN
