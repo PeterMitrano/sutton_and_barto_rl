@@ -59,11 +59,16 @@ def sample_card_value():
 
 
 def play_hand(pi):
-    dealer_showing = sample_card_value()
-    dealer_hidden = sample_card_value()
-    player_showing = sample_card_value()
-    player_hidden = sample_card_value()
+    dealer_sum = np.random.randint(12, 22)
+    dealer_showing = np.random.randint(max(dealer_sum - 11, 2), min(11, dealer_sum))
+    dealer_hidden = dealer_sum - dealer_showing
+
+    player_sum = np.random.randint(12, 22)
+    player_showing = np.random.randint(max(player_sum - 11, 2), min(11, player_sum))
+    player_hidden = player_sum - player_showing
+
     first_action = np.random.randint(0, 2)
+
     return play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden, first_action)
 
 
@@ -76,7 +81,7 @@ def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden,
     s.player_cards.append(player_hidden)
     s.dealer_showing = dealer_showing
     s.dealer_cards.append(dealer_hidden)
-    s.usable_ace = 1 if (player_hidden == 1 and s.player_sum < 21) else 0
+    s.usable_ace = 1 if (player_hidden == 11 or player_showing == 11) else 0
     states.append(deepcopy(s))
 
     # print(s)
