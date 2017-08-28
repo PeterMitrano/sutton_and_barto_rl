@@ -1,14 +1,52 @@
-from collections import namedtuple
+from copy import deepcopy
 
 import numpy as np
 
-BlackJackState = namedtuple("BlackjackState", ["dealer_showing", "player_showing", "player_hidden", "usable_ace"])
 
-HIT = 1
+class BlackJackState:
+    def __init__(self):
+        self.player_cards = []
+        self.usable_ace = False
+        self.dealer_cards = []
+        self.dealer_showing = None
+
+    @property
+    def player_sum(self):
+        sum = 0
+        for c in self.player_cards:
+            if c == 1 and sum + 11 < 21:
+                sum += 11
+            else:
+                sum += c
+
+        return sum
+
+    @property
+    def dealer_sum(self):
+        return np.sum(self.dealer_cards) + self.dealer_showing
+
+    def __repr__(self):
+        s = "P("
+        for p in self.player_cards:
+            s += str(p) + ", "
+        s += "), D(" + str(self.dealer_showing) + ", "
+
+        for d in self.dealer_cards:
+            s += str(d) + ", "
+        s += ")"
+
+        if self.usable_ace:
+            s = "*" + s
+
+        return s
+
+
 STICK = 0
-WIN = 1
+HIT = 1
+
 LOSE = -1
 DRAW = 0
+WIN = 1
 
 
 def sample_card_value():
@@ -25,25 +63,36 @@ def play_hand(pi):
     dealer_hidden = sample_card_value()
     player_showing = sample_card_value()
     player_hidden = sample_card_value()
-    # print("{},{} {},{}".format(dealer_hidden, dealer_showing, player_hidden, player_showing))
     return play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
 
 
 def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden):
-    player = player_hidden + player_showing
-    usable_ace = 1 if (player_hidden == 1 and player < 21) else 0
-    s = BlackJackState(dealer_showing, player_showing, player_hidden, usable_ace)
+    states = []
+    actions = []
+
+    s = BlackJackState()
+    s.player_cards.append(player_showing)
+    s.player_cards.append(player_hidden)
+    s.dealer_showing = dealer_showing
+    s.dealer_cards.append(dealer_hidden)
+    s.usable_ace = 1 if (player_hidden == 1 and s.player_sum < 21) else 0
+    states.append(deepcopy(s))
+
+    # print(s)
 
     # implement user policy
     while True:
         action = pi(s)
+        actions.append(action)
         if action == HIT:
-            v = sample_card_value()
-            # print("HIT", v)
-            player += v
-            if player > 21:
+            c = sample_card_value()
+            # print("HIT", c)
+            s.player_cards.append(c)
+            if s.player_sum > 21:
                 # print("player bust")
-                return s, LOSE
+                return states, actions, LOSE
+            else:
+                states.append(deepcopy(s))
         elif action == STICK:
             # now it's the dealer's turn
             break
@@ -51,22 +100,20 @@ def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
             raise ValueError("must HIT or STICK")
 
     # implement dealer policy
-    dealer = dealer_hidden + s.dealer_showing
-
     while True:
-        if dealer > 21:
+        if s.dealer_sum > 21:
             # print("dealer BUST")
-            return s, WIN
-        elif dealer < 17:
-            v = sample_card_value()
-            # print("DEALER HIT", v)
-            dealer += v
-        elif dealer == player:
+            return states, actions, WIN
+        elif s.dealer_sum < 17:
+            c = sample_card_value()
+            # print("DEALER HIT", c)
+            s.dealer_cards.append(c)
+        elif s.dealer_sum == s.player_sum:
             # print("draw")
-            return s, DRAW
-        elif dealer > player:
+            return states, actions, DRAW
+        elif s.dealer_sum > s.player_sum:
             # print("dealer won")
-            return s, LOSE
-        elif player > dealer:
+            return states, actions, LOSE
+        elif s.player_sum > s.dealer_sum:
             # print("player won")
-            return s, WIN
+            return states, actions, WIN
