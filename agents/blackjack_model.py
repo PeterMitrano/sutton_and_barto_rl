@@ -6,24 +6,20 @@ import numpy as np
 class BlackJackState:
     def __init__(self):
         self.player_cards = []
-        self.usable_ace = False
         self.dealer_cards = []
         self.dealer_showing = None
 
     @property
     def player_sum(self):
-        sum = 0
-        for c in self.player_cards:
-            if c == 1 and sum + 11 < 21:
-                sum += 11
-            else:
-                sum += c
-
-        return sum
+        return sum(self.player_cards)
 
     @property
     def dealer_sum(self):
         return np.sum(self.dealer_cards) + self.dealer_showing
+
+    @property
+    def usable_ace(self):
+        return 1 if (11 in self.player_cards) else 0
 
     def __repr__(self):
         s = "P("
@@ -67,6 +63,11 @@ def play_hand(pi):
     player_showing = np.random.randint(max(player_sum - 11, 2), min(11, player_sum))
     player_hidden = player_sum - player_showing
 
+    assert 1 < dealer_showing < 12
+    assert 1 < dealer_hidden < 12
+    assert 1 < player_showing < 12
+    assert 1 < player_hidden < 12
+
     first_action = np.random.randint(0, 2)
 
     return play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden, first_action)
@@ -81,7 +82,6 @@ def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden,
     s.player_cards.append(player_hidden)
     s.dealer_showing = dealer_showing
     s.dealer_cards.append(dealer_hidden)
-    s.usable_ace = 1 if (player_hidden == 11 or player_showing == 11) else 0
     states.append(deepcopy(s))
 
     # print(s)
@@ -99,9 +99,18 @@ def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden,
             c = sample_card_value()
             # print("HIT", c)
             s.player_cards.append(c)
-            if s.player_sum > 21:
+            if s.player_sum > 21 and not s.usable_ace:
                 # print("player bust")
                 return states, actions, LOSE
+            elif s.player_sum > 21 and s.usable_ace:
+                # us the ACE as a 1 instead of 11
+                ace_index = s.player_cards.index(11)
+                s.player_cards[ace_index] = 1
+                if s.player_sum > 21 and not s.usable_ace:
+                    # print("player bust")
+                    return states, actions, LOSE
+                else:
+                    states.append(deepcopy(s))
             else:
                 states.append(deepcopy(s))
         elif action == STICK:
