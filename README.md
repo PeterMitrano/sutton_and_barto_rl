@@ -6,7 +6,7 @@
 1. Evaluative Feedback
 1. The Reinforcement Learning Problem
     1. Value Functions
-        - Random Gridworld `agents/random_gridworld_agent.py`
+        - Random Gridworld [agents/random_gridworld_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/random_gridworld_agent.py)
         - Gridworld Greedy Policy Evaluation `agents/greedy_gridworld_agent.py`
         - Iterative Policy Evaluation in a grid world `gridworld_evaluate_policy.ipynb`
         - Gridworld Policy Iteration `agents/policy_iteration_gridworld_agent.py`
