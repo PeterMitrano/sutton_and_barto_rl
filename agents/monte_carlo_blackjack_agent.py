@@ -25,7 +25,7 @@ def main():
     def Pi(state):
         return pi[state.dealer_showing - 1, state.player_sum - 4, state.usable_ace]
 
-    for j in range(10000):
+    for j in range(20000):
         states, actions, reward = play_hand(Pi)
         # skip the last state since we took no action there?
         experiences = []
@@ -34,6 +34,7 @@ def main():
 
         for s, a, r in experiences:
             state_idx = (s.dealer_showing - 1, s.player_sum - 4, s.usable_ace)
+
             state_action_idx = (s.dealer_showing - 1, s.player_sum - 4, s.usable_ace, a)
             test[state_action_idx[:3]] = 1
 
@@ -43,6 +44,9 @@ def main():
             returns[state_action_idx].append(r)
 
             Q[state_action_idx] = np.mean(returns[state_action_idx])
+
+            if s.dealer_showing == 2 and s.player_sum == 5 and not s.usable_ace:
+                print(a, r, Q[state_idx])
 
             # compute the greedy policy with respect to Q
             pi[state_idx] = np.argmax(Q[state_idx])
@@ -76,6 +80,9 @@ def main():
             no_usable_ace_state_idx = (dealer_showing, player_sum, 0)
             no_usable_ace_v_z[dealer_showing, player_sum] = Q[dealer_showing, player_sum, 0, pi[no_usable_ace_state_idx]]
             # s.append("({:+0.2f} vs {:+0.2f})".format(*Q[no_usable_ace_state_idx]))
+
+            if dealer_showing + 1 == 2 and player_sum + 4 == 5:
+                print(Q[dealer_showing, player_sum, 0], pi[no_usable_ace_state_idx])
 
             if pi[no_usable_ace_state_idx] == HIT:
                 no_usable_ace_hit_x.append(dealer_showing)
@@ -111,7 +118,7 @@ def main():
     ax.set_xticklabels(['A'] + [str(i) for i in range(2, 11)])
     ax.set_yticks(range(18))
     ax.set_yticklabels(range(4, 22))
-    ax.set_title("V* usable_ace")
+    ax.set_title("V* usable ace")
 
     ax = fig.add_subplot(2, 2, 4, projection='3d')
     ax.plot_wireframe(v_x, v_y, no_usable_ace_v_z)
@@ -119,7 +126,7 @@ def main():
     ax.set_xticklabels(['A'] + [str(i) for i in range(2, 11)])
     ax.set_yticks(range(18))
     ax.set_yticklabels(range(4, 22))
-    ax.set_title("V* no_usable_ace")
+    ax.set_title("V* no usable ace")
     plt.show()
 
 

@@ -63,10 +63,11 @@ def play_hand(pi):
     dealer_hidden = sample_card_value()
     player_showing = sample_card_value()
     player_hidden = sample_card_value()
-    return play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
+    first_action = np.random.randint(0, 2)
+    return play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden, first_action)
 
 
-def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden):
+def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden, first_action):
     states = []
     actions = []
 
@@ -81,8 +82,13 @@ def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
     # print(s)
 
     # implement user policy
+    i = 0
     while True:
-        action = pi(s)
+        if i == 0:
+            action = first_action
+        else:
+            action = pi(s)
+
         actions.append(action)
         if action == HIT:
             c = sample_card_value()
@@ -98,6 +104,8 @@ def play_hand_(pi, dealer_showing, dealer_hidden, player_showing, player_hidden)
             break
         else:
             raise ValueError("must HIT or STICK")
+
+        i += 1
 
     # implement dealer policy
     while True:
