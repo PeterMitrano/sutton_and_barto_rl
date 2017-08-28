@@ -10,19 +10,19 @@
         - Gridworld Greedy Policy Evaluation [agents/greedy_gridworld_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/greedy_gridworld_agent.py)
         - Iterative Policy Evaluation in a grid world [gridworld_evaluate_policy.ipynb](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/gridworld_evaluate_policy.ipynb)
         - Exercise 3.10 [gridworld_evaluate_policy.ipynb](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/gridworld_evaluate_policy.ipynb)
-        - Gridworld Policy Iteration [agents/policy_iteration_gridworld_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/policy_itereation_gridworld_agent.py)
+        - Gridworld Policy Iteration [agents/policy_iteration_gridworld_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/policy_iteration_gridworld_agent.py)
         
         
 1. Dynamic Programming
     1. Value Iteration
-        - Exercise 4.8 `gamblers_problem.ipynb`
-        - Gridworld Value Iteration `agents/value_iteration_gridworld_agent.py`
+        - Exercise 4.8 [gamblers_problem.ipynb](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/gamblers_problem.ipynb)
+        - Gridworld Value Iteration [agents/value_iteration_gridworld_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/value_iteration_gridworld_agent.py)
         
 1. Monte Carlo Methods
     1. Monte Carlo Policy Evaluation
-        - Example 5.1, Figure 5.1 `agents/monte_carlo_gridworld_agent.py`
+        - Example 5.1, Figure 5.1 [agents/monte_carlo_gridworld_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/monte_carlo_gridworld_agent.py)
     1. Monte Carlo Control
-        - Monte Carlo ES, Example 5.3 `agents/monte_carlo_blackjack_agent.py`
+        - Monte Carlo ES, Example 5.3 [agents/monte_carlo_blackjack_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/monte_carlo_blackjack_agent.py)
         
 1. Temporal-Difference Learning
 1. Eligibility Trees
