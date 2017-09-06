@@ -26,7 +26,7 @@ if __name__ == "__main__":
     sleep(0.1)
 
     V, _ = evaluate_policy()
-    print(V)
+    print(V, _)
 
     while True:
         best_V = -1e12
