@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>Untitled</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>td_0_exercises</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 <style type="text/css">
@@ -11769,6 +11769,40 @@ div#notebook {
   <div tabindex="-1" id="notebook" class="border-box-sizing">
     <div class="container" id="notebook-container">
 
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Exercises-6.1---6.5">Exercises 6.1 - 6.5<a class="anchor-link" href="#Exercises-6.1---6.5">&#182;</a></h1><h2 id="TD(0)-Learning">TD(0) Learning<a class="anchor-link" href="#TD(0)-Learning">&#182;</a></h2><p><strong>Exericise 6.1: for the driving example, exmplain why TD(0) is better than Monte Carlo when you change the starting state. Lets say you have lots of experience driving home but now you start in a different parking lot.</strong></p>
+<p>With TD(0), the transition from the parking lot to the road (which was part of your old route) will cause the state-value of the new parking lot to include the state-value of the rest of your trip (from the road to your home). If this estimate is already very good, then you're state-value of the new parking lot will instantly become very good. For Monte-Carlo methods, your first state-value estiamte of the new parking lot is based only on that one sample trip home, and therefore could be very inaccurate. Also, you have to wait till you get home to assign state-value to the new parking lot. But the more important difference is that in TD your update is based on all past samples relavent to the route, but in Monte Carlo they are not.</p>
+<p><strong>Exercise 6.2: In figure 6.6, explain why only V(A) changes and say exactly how much</strong></p>
+<p>In the scenario where the agent starts at A and immediately goes right, the only update that would occur would be as follows. The resulting change is by $-0.05$
+\begin{equation}
+\begin{split}
+V(A) &amp;= V(A) - 0.1 ( r + V(L)- V(A)) \
+     &amp;= 0.5 - 0.1 ( 0 - 0.5) \
+     &amp;= 0.45 \
+\end{split}
+\end{equation}</p>
+<p><strong>Exercise 6.3: </strong></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
     </div>
   </div>
 </body>
