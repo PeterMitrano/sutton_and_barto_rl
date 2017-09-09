@@ -11,7 +11,7 @@
 # 
 # **Exercise 6.2: In figure 6.6, explain why only V(A) changes and say exactly how much**
 # 
-# In the scenario where the agent starts at A and immediately goes right, the only update that would occur would be as follows. The resulting change is by $-0.05$
+# In the scenario where the agent goes to A and immediately goes left (to $L$), the only update that would occur would be as follows. The resulting change is by $-0.05$
 # \begin{equation}
 # \begin{split}
 # V(A) &= V(A) - 0.1 ( r + V(L)- V(A)) \\
