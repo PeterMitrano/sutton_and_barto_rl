@@ -7,7 +7,7 @@
 # 
 # ## Here's what the environment looks like:
 
-# In[146]:
+# In[2]:
 
 get_ipython().magic('load_ext tikzmagic')
 import matplotlib.pyplot as plt
@@ -15,12 +15,12 @@ from copy import deepcopy
 import numpy as np
 
 
-# In[147]:
+# In[6]:
 
-get_ipython().run_cell_magic('tikz', '-s 800,800', '\\filldraw (-6.5,-0.5) rectangle (-5.5,0.5);\n\\draw[line width=1.5,->] (-4.5,0) -- (-5.5,0);\n\\draw (-5,0.25) node {0};\n\\draw (-4,0) circle (0.5);\n\\draw (-4,0) node {A};\n\\draw[line width=1.5,<->] (-3.5,0) -- (-2.5,0);\n\\draw (-3,0.25) node {0};\n\\draw (-2,0) circle (0.5);\n\\draw (-2,0) node {B};\n\\draw[line width=1.5,<->] (-1.5,0) -- (-0.5,0);\n\\draw (-1,0.25) node {0};\n\\draw (0,0) circle (0.5);\n\\draw (0,0) node {C};\n\\draw (0,-0.75) node {Start};\n\\draw[line width=1.5,<->] (0.5,0) -- (1.5,0);\n\\draw (1,0.25) node {0};\n\\draw (2,0) circle (0.5);\n\\draw (2,0) node {D};\n\\draw[line width=1.5,<->] (2.5,0) -- (3.5,0);\n\\draw (3,0.25) node {0};\n\\draw (4,0) circle (0.5);\n\\draw (4,0) node {E};\n\\draw (5,0.25) node {1};\n\\draw[line width=1.5,->] (4.5,0) -- (5.5,0);\nfilldraw (5.5,-0.5) rectangle (6.5,0.5);')
+get_ipython().run_cell_magic('tikz', '-s 800,800', '\\filldraw (-6.5,-0.5) rectangle (-5.5,0.5);\n\\draw[line width=1.5,->] (-4.5,0) -- (-5.5,0);\n\\draw (-5,0.25) node {0};\n\\draw (-4,0) circle (0.5);\n\\draw (-4,0) node {A};\n\\draw[line width=1.5,<->] (-3.5,0) -- (-2.5,0);\n\\draw (-3,0.25) node {0};\n\\draw (-2,0) circle (0.5);\n\\draw (-2,0) node {B};\n\\draw[line width=1.5,<->] (-1.5,0) -- (-0.5,0);\n\\draw (-1,0.25) node {0};\n\\draw (0,0) circle (0.5);\n\\draw (0,0) node {C};\n\\draw (0,-0.75) node {Start};\n\\draw[line width=1.5,<->] (0.5,0) -- (1.5,0);\n\\draw (1,0.25) node {0};\n\\draw (2,0) circle (0.5);\n\\draw (2,0) node {D};\n\\draw[line width=1.5,<->] (2.5,0) -- (3.5,0);\n\\draw (3,0.25) node {0};\n\\draw (4,0) circle (0.5);\n\\draw (4,0) node {E};\n\\draw (5,0.25) node {1};\n\\draw[line width=1.5,->] (4.5,0) -- (5.5,0);\n\\filldraw (5.5,-0.5) rectangle (6.5,0.5);')
 
 
-# In[176]:
+# In[7]:
 
 def TD0(alpha = 0.1, seed=None):
     if seed:
@@ -51,7 +51,7 @@ def TD0(alpha = 0.1, seed=None):
 
 # ## Replicating figure 6.6
 
-# In[177]:
+# In[8]:
 
 V_s = TD0(seed=9)
 for i in [0, 1, 10, 100]:
@@ -67,7 +67,7 @@ plt.show()
 
 # ## Replicating Figure 6.7
 
-# In[180]:
+# In[9]:
 
 def rmse(predictions, targets):
     return np.sqrt(((predictions - targets) ** 2).mean())
@@ -85,9 +85,4 @@ plt.xlabel("Walks / Episodes")
 plt.ylabel("RMS error, averaged over states")
 plt.legend(bbox_to_anchor=(1, 1), loc=2)
 plt.show()
-
-
-# In[ ]:
-
-
 
