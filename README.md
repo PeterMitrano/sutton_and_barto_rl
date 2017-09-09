@@ -24,7 +24,7 @@ Answers to exercises and code related to my study of
         - Example 5.1, Figure 5.1 [agents/monte_carlo_gridworld_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/monte_carlo_gridworld_agent.py)
     1. Monte Carlo Control
         - Monte Carlo ES, Example 5.3 [agents/monte_carlo_blackjack_agent.py](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/agents/monte_carlo_blackjack_agent.py)
-    1. Exercise 5.6 [Exercise 5.6.exercises.ipynb](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/Exercise%205.6.ipynb)
+    1. Exercise 5.6 [Exercise 5.6.exercises.ipynb](https://nbviewer.jupyter.org/github/PeterMitrano/sutton_and_barto_rl/blob/master/Exercise%205.6.ipynb) (mathjax won't render on github, so this link goes to nbviewer.jupyer.org)
 
 1. Temporal-Difference Learning
     1. Exercise 6.1, 6.2, ... [td_0.exercises.ipynb](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/td_0_exercises.ipynb)
