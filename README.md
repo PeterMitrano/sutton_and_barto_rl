@@ -28,7 +28,7 @@ Answers to exercises and code related to my study of
 
 1. Temporal-Difference Learning
     1. Exercise 6.1, 6.2, ... [td_0_exercises.ipynb](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/td_0_exercises.ipynb)
-    1. Replicated figures 6.6, 6.7, and 6.8 [Optimality of TD0.ipynb](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/Optimality%20of%20TD0.ipynb)
+    1. Replicated figures 6.6, 6.7, and 6.8 [Optimality of TD0.ipynb](https://github.com/PeterMitrano/sutton_and_barto_rl/blob/master/Optimality%20of%20TD%200.ipynb)
 
 1. Eligibility Trees
 1. Generalization and Function Approximation
