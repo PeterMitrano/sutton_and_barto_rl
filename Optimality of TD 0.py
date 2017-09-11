@@ -20,7 +20,7 @@ import numpy as np
 get_ipython().run_cell_magic('tikz', '-s 800,800', '\\filldraw (-6.5,-0.5) rectangle (-5.5,0.5);\n\\draw[line width=1.5,->] (-4.5,0) -- (-5.5,0);\n\\draw (-5,0.25) node {0};\n\\draw (-4,0) circle (0.5);\n\\draw (-4,0) node {A};\n\\draw[line width=1.5,<->] (-3.5,0) -- (-2.5,0);\n\\draw (-3,0.25) node {0};\n\\draw (-2,0) circle (0.5);\n\\draw (-2,0) node {B};\n\\draw[line width=1.5,<->] (-1.5,0) -- (-0.5,0);\n\\draw (-1,0.25) node {0};\n\\draw (0,0) circle (0.5);\n\\draw (0,0) node {C};\n\\draw (0,-0.75) node {Start};\n\\draw[line width=1.5,<->] (0.5,0) -- (1.5,0);\n\\draw (1,0.25) node {0};\n\\draw (2,0) circle (0.5);\n\\draw (2,0) node {D};\n\\draw[line width=1.5,<->] (2.5,0) -- (3.5,0);\n\\draw (3,0.25) node {0};\n\\draw (4,0) circle (0.5);\n\\draw (4,0) node {E};\n\\draw (5,0.25) node {1};\n\\draw[line width=1.5,->] (4.5,0) -- (5.5,0);\n\\filldraw (5.5,-0.5) rectangle (6.5,0.5);')
 
 
-# In[25]:
+# In[11]:
 
 def TD0(alpha = 0.1, batch=False, E=101, seed=None):
     if seed:
@@ -34,6 +34,7 @@ def TD0(alpha = 0.1, batch=False, E=101, seed=None):
         V_s.append(deepcopy(V[1:6]))
 
         episode = []
+        updates = np.zeros(7)
         
         # Reprocess previous episodes
         if batch:
@@ -41,10 +42,7 @@ def TD0(alpha = 0.1, batch=False, E=101, seed=None):
                 updates = np.zeros(7)
                 for s, reward, s_ in episode:
                     updates[s] += alpha * (reward + V[s_] - V[s])
-                for i in range(6):
-                    V[i] += updates[i];
-                    
-        updates = np.zeros(7)
+
         s = 3 # Always start at "C"
         while True:
             s_ = s + np.random.choice([-1,1])
@@ -64,10 +62,11 @@ def TD0(alpha = 0.1, batch=False, E=101, seed=None):
             s = s_
 
             if s == 6 or s == 0:
-                if batch:
-                    for i in range(6):
-                        V[i] += updates[i];
+
                 break
+        if batch:
+            for i in range(6):
+                V[i] += updates[i];
                 
         episodes.append(episode)
     return V_s
@@ -75,7 +74,7 @@ def TD0(alpha = 0.1, batch=False, E=101, seed=None):
 
 # ## Replicating figure 6.6
 
-# In[7]:
+# In[4]:
 
 V_s = TD0(seed=9)
 for i in [0, 1, 10, 100]:
@@ -91,7 +90,7 @@ plt.show()
 
 # ## Replicating Figure 6.7
 
-# In[38]:
+# In[5]:
 
 def rmse(predictions, targets):
     return np.sqrt(((predictions - targets) ** 2).mean())
@@ -113,14 +112,67 @@ plt.show()
 
 # ## Replicating figure 6.8
 
-# In[34]:
+# In[21]:
 
 # Batch MC
+def MC(alpha = 0.1, batch=False, E=101, seed=None):
+    if seed:
+        np.random.seed(seed) # optional, just useful for consistent debugging
+    V = np.zeros(7) + 0.5
+    V[0] = 0
+    V[6] = 0
+    V_s = []
+    episodes = []
+    for i in range(E):
+        V_s.append(deepcopy(V[1:6]))
 
+        updates = np.zeros(7)
+        
+        # Reprocess previous episodes
+        if batch:
+            for episode in episodes:
+                for s, reward, s_ in episode:
+                    updates[s] += alpha * (reward + V[s_] - V[s])
+    
+        s = 3 # Always start at "C"
+        states = []
+        episode = []
+        while True:
+            states.append(s)
+            s_ = s + np.random.choice([-1,1])
 
+            if s_ == 6:
+                reward = 1
+                episode.append((s, 1, s_))
+                break
+            elif s_ == 0:
+                reward = 0
+                episode.append((s, 0, s_))
+                break
+            s = s_
+
+        for s in states:
+            updates[s] += alpha * (reward - V[s])
+
+        if batch:
+            for i in range(6):
+                V[i] += updates[i];
+
+        episodes.append(episode)
+    return V_s
+    
+errors = np.zeros(100)
+trails = 5
+for i in range(trails):
+    V_s = MC(alpha=0.002, batch=True)[1:] # skip 0th episode
+    for i, V in enumerate(V_s):
+        error = rmse(V, true_V)
+        errors[i] += error/trails
+plt.plot(errors, label="MC")
+
+    
 # Batch TD(0)
 errors = np.zeros(100)
-trails = 10
 for i in range(trails):
     V_s = TD0(alpha=0.002, batch=True)[1:] # skip 0th episode
     for i, V in enumerate(V_s):
@@ -132,6 +184,10 @@ plt.ylabel("RMS error, averaged over states")
 plt.legend(bbox_to_anchor=(1, 1), loc=2)
 plt.show()
 
+
+# ## Hm, well it looks quite different from the book
+# 
+# I'm not convined my implmentations of "Batch" MC or TD(0) are correct. For instance, shouldn't we average updates instead of accumulating them?
 
 # In[ ]:
 
