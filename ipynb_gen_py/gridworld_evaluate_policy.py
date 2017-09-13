@@ -166,13 +166,13 @@ def Pi(state, action):
 # 
 # Now that we have our P, R, and Pi, lets iteratively solve the system of linear equations that is the Value of policy $\pi$
 
-# In[3]:
+# In[6]:
 
-def evaluate_policy(gamma=0.9, debug=True, R_=R):
+def evaluate_policy(gamma=0.9, debug=False, R_=R):
     V = np.zeros((5, 5))
     iters = 0
     converged = False
-    while not converged: 
+    while not converged:
         delta = 0
         newV = np.zeros((5,5))
         for s in S():
@@ -195,20 +195,23 @@ def evaluate_policy(gamma=0.9, debug=True, R_=R):
                 print(np.round(V, 1))
             converged = True
 
-        iters += 1    
-        print(newV)
+        iters += 1
+        if debug:
+            print(newV)
         V = newV
     
     return iters, V
         
-_, _ = evaluate_policy()
+iters, V = evaluate_policy()
+print("converged in {} iters to".format(iters))
+print(V)
 
 
 # ### Well, there you have it. It matches the results of Sutto & Barto exactly (as it should!)
 
 # Now, there's another version of this algorithm that doesn't store updates to V(s) in a seperate array, but rather replaces them as we sweep over the states. We can see that this version actually converges faster than the previous version.
 
-# In[5]:
+# In[7]:
 
 def evaluate_policy_inplace(gamma=0.9, debug=True, R_=R):
     V = np.zeros((5, 5))
@@ -246,7 +249,7 @@ _, _ = evaluate_policy_inplace()
 
 # Let's see how the gamma effects the convergence.
 
-# In[7]:
+# In[8]:
 
 x = np.arange(0.1, 1, 0.05)
 y_inplace = [evaluate_policy_inplace(gamma, False)[0] for gamma in x]
@@ -286,7 +289,7 @@ plt.show()
 
 # ### Code
 
-# In[8]:
+# In[9]:
 
 def R_plus_c(C=2):
     def R_plus_(state, action, next_state):
@@ -310,7 +313,7 @@ _, _ = evaluate_policy_inplace(R_=R_plus_c(-3))
 # 
 # $K = \sum_{i=0}^{\infty} \gamma^i C$
 
-# In[9]:
+# In[10]:
 
 import math
 C = 2
