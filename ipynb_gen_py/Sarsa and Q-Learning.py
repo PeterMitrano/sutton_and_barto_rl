@@ -17,14 +17,14 @@
 
 # ## Example 6.7
 
-# In[29]:
+# In[1]:
 
 import numpy as np
 import matplotlib.pyplot as plt
 np.set_printoptions(suppress=True, precision=3)
 
 
-# In[60]:
+# In[53]:
 
 def env_step(s, a):
     s_ = s
@@ -43,57 +43,71 @@ def env_step(s, a):
     else:
         raise ValueError("a must be between 0 and 3 inclusive, but is {}".format(a))
         
+    done = False
     if s_ == (3, 11):
         r = 1
-        s_ = (3, 0) # back to start
+        done = True
     elif s_[0] == 3 and 0 < s_[1]:
         r = -100
         s_ = (3, 0) # back to start
     else:
         r = -1
     
-    return s_, r
+    return s_, r, done
 
-def sarsa(Pi, alpha=0.1, gamma=0.9, debug=False):
+def sarsa(Pi, alpha=0.1, gamma=1, debug=False):
     Q = np.zeros((4,12,4))
-    E = 1
-    steps = 100
+    epsilon = 0.05
+    E = 500
+    max_steps = 100
     rewards = []
     for i in range(E):
+        epsilon = epsilon * 0.99
         s = (3, 0)
-        a = Pi(Q, s)
+        a = Pi(Q, s, epsilon)
         reward = 0
-        for j in range(steps):
-            s_, r = env_step(s, a)
+        for j in range(max_steps):
+            s_, r, done = env_step(s, a)
+            if debug:
+                print(Q[s], Q[s_])
+                print(s, a, r, s_)
             reward += r
-            a_ = Pi(Q, s_)
+            a_ = Pi(Q, s_, epsilon)
+            Q[s[0], s[1], a] = (1 - alpha)*Q[s[0], s[1], a] + alpha*(r + gamma*Q[s_[0], s_[1], a_])
             if debug:
-                print(s, a, r, s_, Q[s[0], s[1], a])
-            Q[s[0], s[1], a] = (1 - alpha)*Q[s[0], s[1], a] + alpha*(r - gamma*Q[s_[0], s_[1], a_])
-            if debug:
-                print(Q[s[0], s[1], a])
+                print(Q[s])
             s = s_
             a = a_
+            if done:
+                break
+        
         if debug:
             print(reward)
         rewards.append(reward)
     
     return Q, rewards
 
-def epsilon_greedy(Q, s, epsilon=0.05):
+def epsilon_greedy(Q, s, epsilon):
     if np.random.rand() < epsilon:
         a = np.random.randint(0,4)
     else:
         a_s = np.argwhere(Q[s] == np.max(Q[s]))
         a = np.random.choice(a_s.flatten())
-        print(Q[s], a_s.flatten(), a)
         
     return a
 
-np.random.seed(0)
-sarsa_V, sarsa_rewards = sarsa(epsilon_greedy)
+# https://stackoverflow.com/questions/13728392/moving-average-or-running-mean/27681394#27681394
+def running_mean(x, N):
+    cumsum = np.cumsum(np.insert(x, 0, 0)) 
+    return (cumsum[N:] - cumsum[:-N]) / N
 
-plt.plot(sarsa_rewards)
+
+np.random.seed(0)
+sarsa_V, sarsa_rewards = sarsa(epsilon_greedy, debug=False)
+plt.plot(running_mean(sarsa_rewards, 10), label="Sarsa")
+plt.ylabel("Reward per episode")
+plt.xlabel("Episodes")
+plt.legend(bbox_to_anchor=(1,1), loc=2)
 plt.show()
 
 
