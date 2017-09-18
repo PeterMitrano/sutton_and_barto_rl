@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 np.set_printoptions(suppress=True, precision=3)
 
 
-# In[53]:
+# In[58]:
 
 def env_step(s, a):
     s_ = s
@@ -54,6 +54,39 @@ def env_step(s, a):
         r = -1
     
     return s_, r, done
+
+
+def qlearning(Pi, alpha=0.1, gamma=1, debug=False):
+    Q = np.zeros((4,12,4))
+    epsilon = 0.05
+    E = 500
+    max_steps = 100
+    rewards = []
+    for i in range(E):
+        epsilon = epsilon * 0.99
+        s = (3, 0)
+        reward = 0
+        for j in range(max_steps):
+            a = Pi(Q, s, epsilon)
+            s_, r, done = env_step(s, a)
+            if debug:
+                print(Q[s], Q[s_])
+                print(s, a, r, s_)
+            reward += r
+            a_ = Pi(Q, s_, 0)
+            Q[s[0], s[1], a] = (1 - alpha)*Q[s[0], s[1], a] + alpha*(r + gamma*Q[s_[0], s_[1], a_])
+            if debug:
+                print(Q[s])
+            s = s_
+            if done:
+                break
+        
+        if debug:
+            print(reward)
+        rewards.append(reward)
+    
+    return Q, rewards
+
 
 def sarsa(Pi, alpha=0.1, gamma=1, debug=False):
     Q = np.zeros((4,12,4))
@@ -101,14 +134,32 @@ def running_mean(x, N):
     cumsum = np.cumsum(np.insert(x, 0, 0)) 
     return (cumsum[N:] - cumsum[:-N]) / N
 
+def a_to_char(a):
+    if a == 0:
+        return 'N'
+    elif a == 1:
+        return 'S'
+    elif a == 2:
+        return 'E'
+    elif a == 3:
+        return 'W'
+
 
 np.random.seed(0)
 sarsa_V, sarsa_rewards = sarsa(epsilon_greedy, debug=False)
+q_V, q_rewards = qlearning(epsilon_greedy, debug=False)
 plt.plot(running_mean(sarsa_rewards, 10), label="Sarsa")
+plt.plot(running_mean(q_rewards, 10), label="Q Learning")
 plt.ylabel("Reward per episode")
 plt.xlabel("Episodes")
 plt.legend(bbox_to_anchor=(1,1), loc=2)
 plt.show()
+
+print("SARSA POLICY:")
+pfunc = np.vectorize(a_to_char)
+print(pfunc(np.argmax(sarsa_V, axis=2)))
+print("SARSA POLICY:")
+print(pfunc(np.argmax(sarsa_V, axis=2)))
 
 
 # In[ ]:
