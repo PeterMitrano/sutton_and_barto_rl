@@ -21,10 +21,10 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-np.set_printoptions(suppress=True, precision=3)
+np.set_printoptions(suppress=True, precision=1)
 
 
-# In[58]:
+# In[3]:
 
 def env_step(s, a):
     s_ = s
@@ -45,7 +45,7 @@ def env_step(s, a):
         
     done = False
     if s_ == (3, 11):
-        r = 1
+        r = -1
         done = True
     elif s_[0] == 3 and 0 < s_[1]:
         r = -100
@@ -56,24 +56,35 @@ def env_step(s, a):
     return s_, r, done
 
 
-def qlearning(Pi, alpha=0.1, gamma=1, debug=False):
+def episodic_td_0_control(Pi, on_policy, ep_decay=False, debug=False):
+    alpha=0.1
+    gamma=1
+    epsilon=0.1
+    E=550
     Q = np.zeros((4,12,4))
-    epsilon = 0.05
-    E = 500
     max_steps = 100
     rewards = []
     for i in range(E):
-        epsilon = epsilon * 0.99
+        if ep_decay:
+            epsilon = epsilon * 0.99
         s = (3, 0)
         reward = 0
+        if on_policy:
+            a_ = Pi(Q, s, epsilon) 
         for j in range(max_steps):
-            a = Pi(Q, s, epsilon)
+            if on_policy:
+                a = a_
+            else:
+                a = Pi(Q, s, epsilon)
             s_, r, done = env_step(s, a)
             if debug:
                 print(Q[s], Q[s_])
                 print(s, a, r, s_)
             reward += r
-            a_ = Pi(Q, s_, 0)
+            if on_policy:
+                a_ = Pi(Q, s_, epsilon)
+            else:
+                a_ = Pi(Q, s_, 0)
             Q[s[0], s[1], a] = (1 - alpha)*Q[s[0], s[1], a] + alpha*(r + gamma*Q[s_[0], s_[1], a_])
             if debug:
                 print(Q[s])
@@ -84,40 +95,7 @@ def qlearning(Pi, alpha=0.1, gamma=1, debug=False):
         if debug:
             print(reward)
         rewards.append(reward)
-    
-    return Q, rewards
-
-
-def sarsa(Pi, alpha=0.1, gamma=1, debug=False):
-    Q = np.zeros((4,12,4))
-    epsilon = 0.05
-    E = 500
-    max_steps = 100
-    rewards = []
-    for i in range(E):
-        epsilon = epsilon * 0.99
-        s = (3, 0)
-        a = Pi(Q, s, epsilon)
-        reward = 0
-        for j in range(max_steps):
-            s_, r, done = env_step(s, a)
-            if debug:
-                print(Q[s], Q[s_])
-                print(s, a, r, s_)
-            reward += r
-            a_ = Pi(Q, s_, epsilon)
-            Q[s[0], s[1], a] = (1 - alpha)*Q[s[0], s[1], a] + alpha*(r + gamma*Q[s_[0], s_[1], a_])
-            if debug:
-                print(Q[s])
-            s = s_
-            a = a_
-            if done:
-                break
         
-        if debug:
-            print(reward)
-        rewards.append(reward)
-    
     return Q, rewards
 
 def epsilon_greedy(Q, s, epsilon):
@@ -144,22 +122,60 @@ def a_to_char(a):
     elif a == 3:
         return 'W'
 
+on_policy_V, on_policy_rewards = episodic_td_0_control(epsilon_greedy, on_policy=True)
+plt.plot(running_mean(on_policy_rewards, 50), label="Sarsa Learning")
 
-np.random.seed(0)
-sarsa_V, sarsa_rewards = sarsa(epsilon_greedy, debug=False)
-q_V, q_rewards = qlearning(epsilon_greedy, debug=False)
-plt.plot(running_mean(sarsa_rewards, 10), label="Sarsa")
-plt.plot(running_mean(q_rewards, 10), label="Q Learning")
+
+off_policy_V, off_policy_rewards = episodic_td_0_control(epsilon_greedy, on_policy=False)
+plt.plot(running_mean(off_policy_rewards, 50), label="Q Learning")
+
+
 plt.ylabel("Reward per episode")
 plt.xlabel("Episodes")
+plt.ylim([-100,0])
 plt.legend(bbox_to_anchor=(1,1), loc=2)
 plt.show()
 
 print("SARSA POLICY:")
 pfunc = np.vectorize(a_to_char)
-print(pfunc(np.argmax(sarsa_V, axis=2)))
+print(pfunc(np.argmax(on_policy_V, axis=2)))
+print(np.amax(on_policy_V, axis=2))
+print("Q LEARNING POLICY:")
+print(pfunc(np.argmax(off_policy_V, axis=2)))
+print(np.amax(off_policy_V, axis=2))
+
+
+# ## Sarsa learning is more careful, and does better because of it
+# 
+# As you can see, the sarsa learner tends to walk further away from the cliff than the q-learner. Why would this be? Well, the sarsa learner takes into account $\epsilon$ when evaluting the poicy to get $a'$ (see line 76 above), whereas the q learner ignore the fact that the policy randomly takes non-max actions, because it blindly takes the next action $a'$ to be the max of all actions from $s'$. In otherwords, because sarsa is on policy, it realizes that there's a small change it will choose to go south from right above the cliff and fall off, whereas the q learner ignores this.
+# 
+# Of course, if we make epislon approach 0 over time (as you might want to do to encourage convergence on your policy) then the two algorithms would perform equally well.
+
+# In[4]:
+
+# now with epsilon decay
+on_policy_V, on_policy_rewards = episodic_td_0_control(epsilon_greedy, on_policy=True, ep_decay=True)
+plt.plot(running_mean(on_policy_rewards, 50), label="Sarsa Learning")
+
+
+off_policy_V, off_policy_rewards = episodic_td_0_control(epsilon_greedy, on_policy=False, ep_decay=True)
+plt.plot(running_mean(off_policy_rewards, 50), label="Q Learning")
+
+
+plt.ylabel("Reward per episode")
+plt.xlabel("Episodes")
+plt.title("With Epsilon Decay")
+plt.ylim([-100,0])
+plt.legend(bbox_to_anchor=(1,1), loc=2)
+plt.show()
+
 print("SARSA POLICY:")
-print(pfunc(np.argmax(sarsa_V, axis=2)))
+pfunc = np.vectorize(a_to_char)
+print(pfunc(np.argmax(on_policy_V, axis=2)))
+print(np.amax(on_policy_V, axis=2))
+print("Q LEARNING POLICY:")
+print(pfunc(np.argmax(off_policy_V, axis=2)))
+print(np.amax(off_policy_V, axis=2))
 
 
 # In[ ]:
