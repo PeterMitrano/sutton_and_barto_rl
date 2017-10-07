@@ -31,7 +31,8 @@ def main():
 
     rewards = []
     j = 0
-    for j in range(100000):
+    N = 100000
+    for j in range(N):
         move = np.random.randint(0, 4)
         s = (obs[0], obs[1])
         obs, reward, done, info = env.step(move)
