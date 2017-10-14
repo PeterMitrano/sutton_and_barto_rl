@@ -1,5 +1,5 @@
 Answers to exercises and code related to my study of
-## "Reinforcement Learning" by Sutton & Barto (1996)
+## "Reinforcement Learning" by Sutton & Barto (1998)
 
 **Table of Contents**
 
