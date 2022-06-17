@@ -4,7 +4,7 @@ cycler==0.10.0
 -e git+git@github.com:PeterMitrano/gym.git@8ed672a67caf0e000b2839799d77f7254056874e#egg=gym
 idna==2.6
 matplotlib==2.0.2
-numpy==1.13.1
+numpy==1.21.0
 pyglet==1.2.4
 pyparsing==2.2.0
 python-dateutil==2.6.1
